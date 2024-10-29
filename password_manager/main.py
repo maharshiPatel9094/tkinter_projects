@@ -58,24 +58,25 @@ def save_password():
     else:
         # message box to check the entered details
 # open the file in the append mode so we can create if file does not exist and update it 
-        with open("passwords.json","r") as file:
-            # write the data in json -> dump
-            # read json data -> load
-            data = json.load(file)
+        try:
+            with open("passwords.json","r") as file:
+                # write the data in json -> dump
+                # read json data -> load
+                data = json.load(file)
+        except FileNotFoundError:
+            with open("password.json","w") as file:
+                json.dump(new_data,file,indent=4)
+        else:
             # print(data)
             # update json data -> update
             data.update(new_data)
-            
-        with open("passwords.json","w") as data_file:
-            # load
-            json.dump(data,data_file,indent=4)
-            # clear the entry field after saving the file
-            website_entry.delete(0,END)
-            password_entry.delete(0,END)
-            
-
-
-
+            with open("passwords.json","w") as data_file:
+                    # load
+                    json.dump(data,data_file,indent=4)
+                    # clear the entry field after saving the file
+        finally:
+                website_entry.delete(0,END)
+                password_entry.delete(0,END)
 # ---------------------------- UI SETUP ------------------------------- #
 window = Tk()
 window.title("Password Manager")
