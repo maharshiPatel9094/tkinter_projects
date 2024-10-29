@@ -18,6 +18,20 @@ numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
 symbols = ['!', '@', '#', '$', '%', '^', '&', '*','+']
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+def find_password():
+    website = website_entry.get()
+    try:
+        with open("passwords.json") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="ERROR",message="No data file found")
+    else:    
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website,message=f"Email: {email}\nPassword: {password}")
+
+
 def generate_password():
     num_letters = random.randint(8,10)
     num_symbols = random.randint(2,4)
@@ -64,7 +78,7 @@ def save_password():
                 # read json data -> load
                 data = json.load(file)
         except FileNotFoundError:
-            with open("password.json","w") as file:
+            with open("passwords.json","w") as file:
                 json.dump(new_data,file,indent=4)
         else:
             # print(data)
@@ -100,7 +114,7 @@ password_label.grid(column=0, row=3)
 
 # Entry fields
 website_entry = Entry(width=35)
-website_entry.grid(column=1, row=1, columnspan=2, sticky='ew')
+website_entry.grid(column=1, row=1, sticky='ew')
 # when the window open the cursor will be focused in this entry
 website_entry.focus()
 
@@ -117,6 +131,9 @@ generate_password_button.grid(column=2, row=3, sticky='ew')  # Align with passwo
 
 add_button = Button(text="Add", width=36, command= save_password)
 add_button.grid(column=1, row=4, columnspan=2, sticky='ew')
+
+search_button = Button(text="Search",command=find_password)
+search_button.grid(column=2,row=1,sticky="ew")
 
 # Configure column weight for expansion
 window.grid_columnconfigure(1, weight=1)  # Allow the first column to expand
