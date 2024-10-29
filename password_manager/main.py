@@ -1,27 +1,65 @@
 from tkinter import *
 from tkinter import messagebox
+import random
+import pyperclip
+
+letters = [
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
+    'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 
+    'u', 'v', 'w', 'x', 'y', 'z',
+    'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 
+    'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 
+    'U', 'V', 'W', 'X', 'Y', 'Z'
+]
+
+numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+
+symbols = ['!', '@', '#', '$', '%', '^', '&', '*','+']
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
+def generate_password():
+    num_letters = random.randint(8,10)
+    num_symbols = random.randint(2,4)
+    num_numbers = random.randint(2,4)
+
+
+    # list comprehension 
+    password_letters = [random.choice(letters) for _ in range(num_letters)]
+    password_symbols = [random.choice(symbols) for _ in range(num_symbols)]
+    password_numbers = [random.choice(numbers) for _ in range(num_numbers)]
+
+    password_list = password_letters + password_numbers + password_symbols
+    random.shuffle(password_list)
+
+
+    password = "".join(password_list)
+    password_entry.insert(0,password)
+    # copy the password in clipboard
+    pyperclip.copy(password)
+    # password = ""
+    # for char in password_list:
+    #     password += char
+# ---------------------------- SAVE PASSWORD ------------------------------- #
 def save_password():
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
     
-    # message box to check the entered details
-    is_ok = messagebox.askokcancel(title=website,message=f"These are the details entered: \nEmial: {username} \nPassword: {password} \nIs it ok to save?")
-    if is_ok:
-        # open the file in the append mode so we can create if file does not exist and update it 
-        with open("passwords.txt","a") as file:
-            file.write(f"website: {website} | username: {username} | Password: {password} \n")
-        
-        # clear the entry field after saving the file
-        website_entry.delete(0,END)
-        password_entry.delete(0,END)
-    
+    # entry validation and pop up for empty value
+    if len(website) == 0 or len(password) == 0:
+        messagebox.showinfo(title="Oops",message="Please make sure You have not left any field empty.")
+    else:
+        # message box to check the entered details
+        is_ok = messagebox.askokcancel(title=website,message=f"These are the details entered: \nEmial: {username} \nPassword: {password} \nIs it ok to save?")
+        if is_ok:
+            # open the file in the append mode so we can create if file does not exist and update it 
+            with open("passwords.txt","a") as file:
+                file.write(f"website: {website} | username: {username} | Password: {password} \n")
             
-    
-
-# ---------------------------- SAVE PASSWORD ------------------------------- #
+            # clear the entry field after saving the file
+            website_entry.delete(0,END)
+            password_entry.delete(0,END)
+            
 
 
 
@@ -60,7 +98,7 @@ password_entry = Entry(width=21)
 password_entry.grid(column=1, row=3, sticky='ew')  # Add sticky to expand
 
 # Buttons
-generate_password_button = Button(text="Generate Password")
+generate_password_button = Button(text="Generate Password",command=generate_password)
 generate_password_button.grid(column=2, row=3, sticky='ew')  # Align with password entry
 
 add_button = Button(text="Add", width=36, command= save_password)
