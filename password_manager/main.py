@@ -1,7 +1,8 @@
 from tkinter import *
 from tkinter import messagebox
 import random
-import pyperclip
+import json
+# import pyperclip 
 
 letters = [
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 
@@ -35,7 +36,7 @@ def generate_password():
     password = "".join(password_list)
     password_entry.insert(0,password)
     # copy the password in clipboard
-    pyperclip.copy(password)
+    # pyperclip.copy(password)
     # password = ""
     # for char in password_list:
     #     password += char
@@ -44,18 +45,30 @@ def save_password():
     website = website_entry.get()
     username = username_entry.get()
     password = password_entry.get()
+    new_data = {
+        website:{
+            "email" : username,
+            "password": password
+        }
+    }
     
     # entry validation and pop up for empty value
     if len(website) == 0 or len(password) == 0:
         messagebox.showinfo(title="Oops",message="Please make sure You have not left any field empty.")
     else:
         # message box to check the entered details
-        is_ok = messagebox.askokcancel(title=website,message=f"These are the details entered: \nEmial: {username} \nPassword: {password} \nIs it ok to save?")
-        if is_ok:
-            # open the file in the append mode so we can create if file does not exist and update it 
-            with open("passwords.txt","a") as file:
-                file.write(f"website: {website} | username: {username} | Password: {password} \n")
+# open the file in the append mode so we can create if file does not exist and update it 
+        with open("passwords.json","r") as file:
+            # write the data in json -> dump
+            # read json data -> load
+            data = json.load(file)
+            # print(data)
+            # update json data -> update
+            data.update(new_data)
             
+        with open("passwords.json","w") as data_file:
+            # load
+            json.dump(data,data_file,indent=4)
             # clear the entry field after saving the file
             website_entry.delete(0,END)
             password_entry.delete(0,END)
