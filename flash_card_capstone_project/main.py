@@ -6,26 +6,37 @@ import random
 BACKGROUND_COLOR = "#B1DDC6"
 
 
-
+current_card = {}
+words_data = {}
 # CSV data to list of dict
-data = pandas.read_csv("./data/french_words.csv")
+try:
+    data = pandas.read_csv("./data/words_to_learn.csv")
+except FileNotFoundError:
+    data = pandas.read_csv("./data/french_words.csv")
+    words_data = data.to_dict(orient="records")
+else:
 # setting orient to records it makes a list of dictionaries
 # so we can pick any random value from list and acces the french and english value
-words_data = data.to_dict(orient="records")
+    words_data = data.to_dict(orient="records")
 # print(data)
 
-current_card = {}
+
+
+
+
+# card will only flip when you are on a new card for a 3 sec otherwise it wont flip
 
 # functions
 def next_card():
     global current_card,flip_timer
+    window.after_cancel(flip_timer)
     current_card = random.choice(words_data)
     canvas.itemconfig(canvas_title,text="French",fill="black")
     canvas.itemconfig(canvas_word,text=current_card["French"],fill="black")
     canvas.itemconfig(card_background,image=card_front_img)
     # current_card["English"]
     # flip the card after 3 sec
-    window.after(3000,func = flip_card)
+    flip_timer = window.after(3000,func = flip_card)
 
 def flip_card():
     canvas.itemconfig(canvas_title,text="English",fill="white")
@@ -33,6 +44,11 @@ def flip_card():
     # we can not create photoimage inside the function because once the function gets runned it will lost his reference
     canvas.itemconfig(card_background,image=card_back_img)
 
+def is_known():
+    words_data.remove(current_card)
+    data = pandas.DataFrame(words_data)
+    data.to_csv("./data/words_to_learn.csv",index=False)
+    next_card()
 
 # window setup
 window = Tk()
@@ -59,7 +75,7 @@ canvas.grid(column=0,row=0,columnspan=2,sticky="nsew")
 
 # buttons 
 right_image = PhotoImage(file="./images/right.png")
-right_button = Button(image=right_image,highlightthickness=0,command=next_card)
+right_button = Button(image=right_image,highlightthickness=0,command=is_known)
 right_button.grid(column=1,row=1)
 wrong_image = PhotoImage(file="./images/wrong.png")
 wrong_button = Button(image=wrong_image,highlightthickness=0,command=next_card)
