@@ -30,7 +30,8 @@ def find_password():
             email = data[website]["email"]
             password = data[website]["password"]
             messagebox.showinfo(title=website,message=f"Email: {email}\nPassword: {password}")
-
+        else:
+            messagebox.showinfo(title="ERROR",message=f"No details for {website} exists.")
 
 def generate_password():
     num_letters = random.randint(8,10)
